@@ -1,56 +1,55 @@
 <?php
-// Systemet kappelplatsen http://api.met.no/weatherapi/locationforecast/1.8/?lat=57.69;lon=11.97;msl=10
+// XXX: Add caching.
+// XXX: Fade to color depending on weather.
+
+date_default_timezone_set('Europe/Stockholm');
+
 $url = 'http://api.met.no/weatherapi/locationforecast/1.8/?lat=57.42;lon=11.55;msl=10';
 $xml = file_get_contents($url);
-
-//$ch = curl_init();
-//curl_setopt($ch, CURLOPT_URL, $url);
-//curl_setopt($ch, CURLOPT_HEADER, false);
-//curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//$xml = curl_exec($ch);
-//curl_close($ch);
-
-// The weather types.
-//SUN
-//LIGHTCLOUD
-//PARTLYCLOUD
-//CLOUD
-//LIGHTRAINSUN
-//LIGHTRAINTHUNDERSUN
-//SLEETSUN
-//SNOWSUN
-//LIGHTRAIN
-//RAIN
-//RAINTHUNDER
-//SLEET
-//SNOW
-//SNOWTHUNDER
-//FOG
 
 $dom = new DOMDocument();
 $dom->preserveWhiteSpace = false;
 $dom->loadXML($xml);
-$times = $dom->getElementsByTagName('time');
 
-date_default_timezone_set('Europe/Berlin');
-//$t = '2011-04-04T21:00:00Z';
-//echo date('Y-m-n H:i', strtotime($t));
+//$time_node = find_forecast_node($dom->getElementsByTagName('time'), time());
+$time_node = find_forecast_node($dom->getElementsByTagName('time'), strtotime('2011-04-06T18:00:00Z'));
 
-$now = time();
-foreach ($times as $time) {
-	$start = $time->getAttribute('from');
-	$end = $time->getAttribute('to');
-
-	if ($now > strtotime($start) && $now <= strtotime($end)) {
-		$now_node = $time;
-		break;
+/*
+ * Gets the first forecast that covers the specified time.
+ */
+function find_forecast_node($node_list, $time)
+{
+	foreach ($node_list as $t) {
+		if ($time > strtotime($t->getAttribute('from'))
+				&& $time <= strtotime($t->getAttribute('to'))
+				&& $t->getAttribute('from') != $t->getAttribute('to'))
+			return $t;
 	}
+
 }
 
-$symbols = $now_node->getElementsByTagName('symbol');
-foreach($symbols as $s) {
+$symbols = $time_node->getElementsByTagName('symbol');
+
+foreach($symbols as $s)
 	$weather = $s->getAttribute('id');
-}
+
+/* The weather types.
+	SUN
+	LIGHTCLOUD
+	PARTLYCLOUD
+	CLOUD
+	LIGHTRAINSUN
+	LIGHTRAINTHUNDERSUN
+	SLEETSUN
+	SNOWSUN
+	LIGHTRAIN
+	RAIN
+	RAINTHUNDER
+	SLEET
+	SNOW
+	SNOWTHUNDER
+	FOG
+*/
 
 $is_raining = in_array($weather, array(
 		'LIGHTRAINSUN',

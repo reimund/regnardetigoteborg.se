@@ -11,8 +11,7 @@ $dom = new DOMDocument();
 $dom->preserveWhiteSpace = false;
 $dom->loadXML($xml);
 
-//$time_node = find_forecast_node($dom->getElementsByTagName('time'), time());
-$time_node = find_forecast_node($dom->getElementsByTagName('time'), strtotime('2011-04-06T18:00:00Z'));
+$time_node = find_forecast_node($dom->getElementsByTagName('time'), time());
 
 /*
  * Gets the first forecast that covers the specified time.

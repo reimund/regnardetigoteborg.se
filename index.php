@@ -2,72 +2,23 @@
 // XXX: Add caching.
 // XXX: Fade to color depending on weather.
 
-date_default_timezone_set('Europe/Stockholm');
-
-$url = 'http://api.met.no/weatherapi/locationforecast/1.8/?lat=57.42;lon=11.55;msl=10';
-$xml = file_get_contents($url);
-
-$dom = new DOMDocument();
-$dom->preserveWhiteSpace = false;
-$dom->loadXML($xml);
-
-$time_node = find_forecast_node($dom->getElementsByTagName('time'), time());
+$url = 'http://www.re4u.se/radar4u/RE4U_local/downld02.txt';
+$f = file($url);
 
 /*
- * Gets the first forecast that covers the specified time.
- */
-function find_forecast_node($node_list, $time)
-{
-	foreach ($node_list as $t) {
-		if ($time > strtotime($t->getAttribute('from'))
-				&& $time <= strtotime($t->getAttribute('to'))
-				&& $t->getAttribute('from') != $t->getAttribute('to'))
-			return $t;
-	}
-
-}
-
-$symbols = $time_node->getElementsByTagName('symbol');
-
-foreach($symbols as $s)
-	$weather = $s->getAttribute('id');
-
-/* The weather types.
-	SUN
-	LIGHTCLOUD
-	PARTLYCLOUD
-	CLOUD
-	LIGHTRAINSUN
-	LIGHTRAINTHUNDERSUN
-	SLEETSUN
-	SNOWSUN
-	LIGHTRAIN
-	RAIN
-	RAINTHUNDER
-	SLEET
-	SNOW
-	SNOWTHUNDER
-	FOG
+* Get the last rain measurement
 */
+$line = $file[count($file)-1];
+$array = str_split($line);
 
-$is_raining = in_array($weather, array(
-		'LIGHTRAINSUN',
-		'LIGHTRAINTHUNDERSUN',
-		'SLEETSUN',
-		'SNOWSUN',
-		'LIGHTRAIN',
-		'RAIN',
-		'RAINTHUNDER',
-		'SNOW',
-		'SLEET',
-		'SNOWTHUNDER')) ? true : false;
+$is_raining = intval($array[16])>0;
 ?>
 <!doctype html>
 <html>
 
 <head>
 	<meta charset="UTF-8" /> 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript" charset="utf-8"></script> 
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js" type="text/javascript" charset="utf-8"></script> 
 	<title><?php echo $is_raining ? 'Ja, det regnar i Göteborg.' : 'Nej, det regnar inte i Göteborg.'; ?></title>
 
 <style>

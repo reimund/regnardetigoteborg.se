@@ -10,7 +10,7 @@ $file = file($url);
 */
 $line       = $file[count($file) - 1];
 $array      = str_split($line);
-$is_raining = 0 < intval($array[16]);
+$is_raining = 0 < floatval($array[16]);
 ?>
 <!doctype html>
 <html>

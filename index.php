@@ -2,16 +2,15 @@
 // XXX: Add caching.
 // XXX: Fade to color depending on weather.
 
-$url = 'http://www.re4u.se/radar4u/RE4U_local/downld02.txt';
-$f = file($url);
+$url  = 'http://www.re4u.se/radar4u/RE4U_local/downld02.txt';
+$file = file($url);
 
 /*
-* Get the last rain measurement
+* Get the last rain measurement.
 */
-$line = $file[count($file)-1];
-$array = str_split($line);
-
-$is_raining = intval($array[16])>0;
+$line       = $file[count($file) - 1];
+$array      = str_split($line);
+$is_raining = 0 < intval($array[16]);
 ?>
 <!doctype html>
 <html>

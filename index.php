@@ -8,9 +8,10 @@ $file = file($url);
 /*
 * Get the last rain measurement.
 */
-$line       = $file[count($file) - 1];
-$array      = str_split($line);
-$is_raining = 0 < floatval($array[16]);
+$line = $file[count($file) - 1];
+$rain = floatval(substr($line, 110, 5));
+
+$is_raining = 0 < $rain;
 ?>
 <!doctype html>
 <html>
